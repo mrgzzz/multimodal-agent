@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мультимодальный ассистент | Фиолетовая магия</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        /* ========================
+           АККУРАТНЫЙ ДИЗАЙН — все блоки прилипают друг к другу
+           ======================== */
+        
+        :root {
+            --purple-95: hsl(265, 66%, 95%);
+            --purple-90: hsl(265, 66%, 90%);
+            --purple-80: hsl(265, 66%, 80%);
+            --purple-60: #aa80e5;
+            --purple-40: hsl(265, 66%, 40%);
+            --purple-30: hsl(265, 66%, 30%);
+            --purple-20: hsl(265, 66%, 20%);
+            --purple-10: hsl(265, 66%, 10%);
+            
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.12);
+            --border-radius-card: 28px;
+            --border-radius-input: 60px;
+            --border-radius-btn: 40px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(160deg, var(--purple-95) 0%, var(--purple-90) 100%);
+            min-height: 100vh;
+            color: var(--purple-10);
+            line-height: 1.5;
+        }
+
+        /* Центрирование с умеренными отступами */
+        .app-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Основная карточка — плотная, без лишних расстояний */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border-radius: var(--border-radius-card);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            padding: 28px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* Верхняя секция: заголовок + инпут рядом, компактно */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .title-badge {
+            flex-shrink: 0;
+        }
+
+        .title-badge h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, var(--purple-20) 0%, var(--purple-40) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .title-badge p {
+            color: var(--purple-40);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .input-compact {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius-input);
+            padding: 4px 4px 4px 20px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--purple-80);
+            transition: var(--transition);
+        }
+        .input-compact:focus-within {
+            border-color: var(--purple-60);
+            box-shadow: 0 0 0 3px rgba(170, 128, 229, 0.15);
+        }
+
+        .input-compact textarea {
+            flex: 1;
+            border: none;
+            padding: 14px 0;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: transparent;
+            resize: none;
+            outline: none;
+            font-weight: 500;
+            color: var(--purple-10);
+            line-height: 1.4;
+        }
+
+        .input-compact textarea::placeholder {
+            color: var(--purple-80);
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+
+        .send-btn-circle {
+            background: var(--purple-40);
+            border: none;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .send-btn-circle:hover {
+            background: var(--purple-30);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .send-btn-circle:disabled {
+            opacity: 0.5;
+            transform: none;
+        }
+
+        /* suggestions — компактный блок, плотно прилегает */
+        .suggestions-card {
+            background: var(--purple-95);
+            border-radius: 20px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--purple-80);
+        }
+
+        .suggestions-card p {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--purple-40);
+            margin-bottom: 10px;
+        }
+
+        .suggestion-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .suggestion-buttons button {
+            background: white;
+            border: 1px solid var(--purple-80);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--purple-30);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .suggestion-buttons button:hover {
+            background: var(--purple-60);
+            color: white;
+            border-color: var(--purple-60);
+            transform: translateY(-1px);
+        }
+
+        /* Результат — без лишних отступов, аккуратно */
+        .result-lounge {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--purple-80);
+            transition: var(--transition);
+        }
+
+        .result-header-new {
+            background: var(--purple-95);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--purple-80);
+        }
+
+        .result-type-new {
+            font-weight: 600;
+            font-size: 0.75rem;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: var(--purple-40);
+            border: 1px solid var(--purple-80);
+        }
+
+        .result-time-new {
+            font-size: 0.65rem;
+            color: var(--purple-40);
+            font-weight: 500;
+        }
+
+        .result-body-new {
+            padding: 20px;
+            min-height: 200px;
+            background: white;
+        }
+
+        .text-response {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--purple-10);
+        }
+
+        .generated-image {
+            max-width: 100%;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            display: block;
+            margin: 0 auto;
+        }
+
+        .error-message {
+            color: #c44b6c;
+            background: rgba(170, 128, 229, 0.08);
+            padding: 16px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .loading-modern {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 12px;
+        }
+
+        .spinner-new {
+            width: 40px;
+            height: 40px;
+            border: 2.5px solid var(--purple-80);
+            border-top: 2.5px solid var(--purple-40);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 0.65rem;
+            color: var(--purple-40);
+            opacity: 0.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Адаптив — на маленьких экранах всё в колонку */
+        @media (max-width: 700px) {
+            .app-wrapper {
+                padding: 20px 16px;
+            }
+            .glass-panel {
+                padding: 20px;
+            }
+            .hero-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+                margin-bottom: 20px;
+            }
+            .title-badge h1 {
+                font-size: 1.6rem;
+            }
+            .input-compact {
+                padding: 3px 3px 3px 16px;
+            }
+            .send-btn-circle {
+                padding: 8px 18px;
+            }
+            .suggestions-card {
+                margin-bottom: 20px;
+                padding: 12px 16px;
+            }
+            .suggestion-buttons button {
+                padding: 5px 12px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-body-new {
+                padding: 14px;
+            }
+            .result-header-new {
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <div class="glass-panel">
+        <!-- Верхняя область — компактный ряд -->
+        <div class="hero-section">
+            <div class="title-badge">
+                <h1>Ассистент</h1>
+                <p>текст или изображение</p>
+            </div>
+            <div class="input-compact">
+                <textarea id="promptInput" rows="1" placeholder="Напишите что угодно... Нарисуй космос, объясни ИИ..."></textarea>
+                <button id="sendBtn" class="send-btn-circle">
+                    <span>→</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Блок примеров — без лишних отступов сверху и снизу -->
+        <div class="suggestions-card">
+            <p>⚡ БЫСТРЫЕ ЗАПРОСЫ</p>
+            <div class="suggestion-buttons">
+                <button data-prompt="Расскажи о черных дырах и сингулярности">🌌 Чёрные дыры</button>
+                <button data-prompt="Напиши короткое стихотворение про осень и фиолетовые тона">🍂 Стих про осень</button>
+                <button data-prompt="Что такое нейросеть простыми словами с примером">🧠 Нейросети</button>
+                <button data-prompt="Нарисуй уютную кофейню с фиолетовыми акцентами и дождём за окном">☕ Нарисуй кофейню</button>
+                <button data-prompt="Создай изображение космического пейзажа с туманностью в фиолетовых тонах">🚀 Космос</button>
+            </div>
+        </div>
+
+        <!-- Результат -->
+        <div class="result-lounge" id="resultArea">
+            <div id="loadingIndicator" class="loading-modern hidden">
+                <div class="spinner-new"></div>
+                <p style="color: var(--purple-40); font-weight: 500;">Генерация...</p>
+                <small style="color: var(--purple-60);">изображения создаются чуть дольше</small>
+            </div>
+            <div id="resultContent" class="hidden">
+                <div class="result-header-new">
+                    <span class="result-type-new" id="resultType">Ответ</span>
+                    <span class="result-time-new" id="resultTime"></span>
+                </div>
+                <div class="result-body-new" id="resultBody"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>автоматически: текст → ответ, картинка → генерация</p>
+        </footer>
+    </div>
+</div>
+
+<script>
+    const promptInput = document.getElementById('promptInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const resultContent = document.getElementById('resultContent');
+    const resultBody = document.getElementById('resultBody');
+    const resultType = document.getElementById('resultType');
+    const resultTime = document.getElementById('resultTime');
+
+    // авто-расширение
+    promptInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    });
+    promptInput.style.height = 'auto';
+
+    async function processRequest(prompt) {
+        if (!prompt.trim()) return;
+        
+        loadingIndicator.classList.remove('hidden');
+        resultContent.classList.add('hidden');
+        sendBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            if (data.type === 'text') {
+                resultType.textContent = '📄 Текстовый ответ';
+                resultType.style.background = 'white';
+                resultBody.innerHTML = `<div class="text-response">${escapeHtml(data.data)}</div>`;
+            } else if (data.type === 'image') {
+                resultType.textContent = '🎨 Сгенерированное изображение';
+                resultType.style.background = 'white';
+                resultBody.innerHTML = `<img src="data:image/png;base64,${data.data}" alt="Изображение" class="generated-image">`;
+            }
+            
+            resultTime.textContent = `⏱️ ${data.time} сек`;
+            resultContent.classList.remove('hidden');
+            
+        } catch (error) {
+            resultType.textContent = '❌ Ошибка';
+            resultBody.innerHTML = `<div class="error-message">⚠️ ${escapeHtml(error.message)}</div>`;
+            resultContent.classList.remove('hidden');
+        } finally {
+            loadingIndicator.classList.add('hidden');
+            sendBtn.disabled = false;
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML.replace(/\n/g, '<br>');
+    }
+    
+    sendBtn.addEventListener('click', () => {
+        const prompt = promptInput.value.trim();
+        if (prompt) processRequest(prompt);
+    });
+    
+    promptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (promptInput.value.trim()) processRequest(promptInput.value.trim());
+        }
+    });
+    
+    document.querySelectorAll('.suggestion-buttons button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const prompt = btn.getAttribute('data-prompt');
+            promptInput.value = prompt;
+            promptInput.dispatchEvent(new Event('input'));
+            processRequest(prompt);
+        });
+    });
+</script>
+</body>
+</html>
